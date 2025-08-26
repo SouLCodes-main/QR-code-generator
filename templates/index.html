@@ -4,19 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-     <h1>Generate a QR Code</h1>
-    <form method="POST">
-        <input type="text" name="data" placeholder="Enter text or URL" required>
-        <button type="submit">Generate</button>
-    </form>
+    <div class="container">
+        <h1>QR Code Generator</h1>
+        
+        <form method="POST">
+            <div class="tabs">
+                <button type="button" class="tab-btn active" data-tab="text">Text</button>
+                <button type="button" class="tab-btn" data-tab="url">URL</button>
+                <button type="button" class="tab-btn" data-tab="image">Image</button>
+                <button type="button" class="tab-btn" data-tab="contact">Contact</button>
+                <button type="button" class="tab-btn" data-tab="wifi">WiFi</button>
+            </div>
+            
+            <!-- Text Section -->
+            <div class="tab-content active" id="text">
+                <input type="text" name="text" placeholder="Enter text">
+            </div>
 
-    {% if qr_img %}
-    <h3>Your QR Code:</h3>
-    <img src="{{ qr_img }}" alt="QR Code" width="200">
-    <br><a href="{{ qr_img }}" download>Download QR</a>
-    {% endif %}
-    
+            <!-- URL Section -->
+            <div class="tab-content" id="url">
+                <input type="url" name="url" placeholder="Enter URL (https://example.com)">
+            </div>
+
+            <!-- Image Section -->
+            <div class="tab-content" id="image">
+                <input type="url" name="image" placeholder="Enter image URL">
+            </div>
+
+            <!-- Contact Section -->
+            <div class="tab-content" id="contact">
+                <input type="text" name="name" placeholder="Full Name">
+                <input type="tel" name="phone" placeholder="Phone Number">
+                <input type="email" name="email" placeholder="Email">
+            </div>
+
+            <!-- WiFi Section -->
+            <div class="tab-content" id="wifi">
+                <input type="text" name="ssid" placeholder="WiFi SSID">
+                <input type="text" name="password" placeholder="Password">
+                <select name="encryption">
+                    <option value="WPA">WPA/WPA2</option>
+                    <option value="WEP">WEP</option>
+                    <option value="nopass">No Password</option>
+                </select>
+            </div>
+
+            <button type="submit" class="generate-btn">Generate QR</button>
+        </form>
+
+        {% if qr_img %}
+        <div class="result">
+            <h3>Your QR Code:</h3>
+            <img src="{{ qr_img }}" alt="QR Code">
+            <a href="{{ qr_img }}" download class="download-btn">Download QR</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                contents.forEach(c => c.classList.remove('active'));
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+    </script>
 </body>
 </html>
