@@ -39,9 +39,5 @@ def index():
 
     return render_template('index.html', qr_img=qr_img)
 
-# For Vercel to detect the app
-def handler(event, context):
-    return app(event, context)
-
 if __name__ == '__main__':
     app.run(debug=True)
