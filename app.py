@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, url_for
 import qrcode
 import os
+import base64
+import io
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/qr_codes'
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -30,13 +30,18 @@ def index():
             qr_data = f"WIFI:T:{encryption};S:{ssid};P:{password};;"
         
         if qr_data:
-            file_name = f"qr_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+            # Generate QR code as base64 instead of saving file
             img = qrcode.make(qr_data)
-            img.save(file_path)
-            qr_img = url_for('static', filename=f'qr_codes/{file_name}')
+            buffer = io.BytesIO()
+            img.save(buffer, format='PNG')
+            buffer.seek(0)
+            qr_img = f"data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}"
 
     return render_template('index.html', qr_img=qr_img)
+
+# For Vercel to detect the app
+def handler(event, context):
+    return app(event, context)
 
 if __name__ == '__main__':
     app.run(debug=True)
